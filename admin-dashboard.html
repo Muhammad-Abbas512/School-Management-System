@@ -1,63 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Dashboard — Scholaris Admin</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/lucide@latest"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-<script>
-  tailwind.config = {
-    darkMode: 'class',
-    theme: {
-      extend: {
-        colors: {
-          primary: '#2563EB', success: '#22C55E', danger: '#EF4444',
-          warning: '#F59E0B', bg: '#F8FAFC', ink: '#0F172A',
-          muted: '#64748B', line: '#E2E8F0',
-        },
-        fontFamily: { sans: ['Inter','sans-serif'] },
-        borderRadius: { card: '16px', btn: '12px', inp: '10px' },
-        boxShadow: { soft: '0 1px 3px rgba(15,23,42,.08)' }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Scholaris Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2563EB', success: '#22C55E', danger: '#EF4444',
+            warning: '#F59E0B', bg: '#F8FAFC', ink: '#0F172A',
+            muted: '#64748B', line: '#E2E8F0',
+          },
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          borderRadius: { card: '16px', btn: '12px', inp: '10px' },
+          boxShadow: { soft: '0 1px 3px rgba(15,23,42,.08)' }
+        }
       }
     }
-  }
-</script>
-<style>
-  body { font-family: 'Inter', sans-serif; }
-  ::-webkit-scrollbar { width: 8px; height: 8px; }
-  ::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 8px; }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
 
-  .sidebar-link { transition: background-color .15s ease, color .15s ease; }
-  .sidebar-link.active { background: #2563EB; color: white; }
-  .sidebar-link.active svg { color: white; }
-  .sidebar-link:not(.active):hover { background: #F1F5F9; }
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
 
-  #sidebar { transition: transform .25s ease, width .2s ease; }
-  #overlay { transition: opacity .2s ease; }
+    ::-webkit-scrollbar-thumb {
+      background: #E2E8F0;
+      border-radius: 8px;
+    }
 
-  .collapsed #sidebar-labels, .collapsed .sidebar-section-label, .collapsed #sidebar-footer-text { display: none; }
-  .collapsed #sidebar { width: 84px; }
-  .collapsed #brand-text { display: none; }
+    .sidebar-link {
+      transition: background-color .15s ease, color .15s ease;
+    }
 
-  @media (max-width: 1023px) {
-    #sidebar { position: fixed; z-index: 50; top: 0; left: 0; height: 100vh; transform: translateX(-100%); }
-    #sidebar.open { transform: translateX(0); }
-  }
+    .sidebar-link.active {
+      background: #2563EB;
+      color: white;
+    }
 
-  .quick-action:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(15,23,42,.08); }
-  .quick-action { transition: transform .15s ease, box-shadow .15s ease; }
+    .sidebar-link.active svg {
+      color: white;
+    }
 
-  .timeline-dot::before {
-    content: ''; position: absolute; left: 5px; top: 22px; bottom: -22px; width: 2px; background: #E2E8F0;
-  }
-  .timeline-item:last-child .timeline-dot::before { display: none; }
-</style>
+    .sidebar-link:not(.active):hover {
+      background: #F1F5F9;
+    }
+
+    #sidebar {
+      transition: transform .25s ease, width .2s ease;
+    }
+
+    #overlay {
+      transition: opacity .2s ease;
+    }
+
+    .collapsed #sidebar-labels,
+    .collapsed .sidebar-section-label,
+    .collapsed #sidebar-footer-text {
+      display: none;
+    }
+
+    .collapsed #sidebar {
+      width: 84px;
+    }
+
+    .collapsed #brand-text {
+      display: none;
+    }
+
+    @media (max-width: 1023px) {
+      #sidebar {
+        position: fixed;
+        z-index: 50;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        transform: translateX(-100%);
+      }
+
+      #sidebar.open {
+        transform: translateX(0);
+      }
+    }
+
+    .quick-action:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(15, 23, 42, .08);
+    }
+
+    .quick-action {
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+
+    .timeline-dot::before {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 22px;
+      bottom: -22px;
+      width: 2px;
+      background: #E2E8F0;
+    }
+
+    .timeline-item:last-child .timeline-dot::before {
+      display: none;
+    }
+  </style>
 </head>
+
 <body class="bg-bg text-ink antialiased">
 
   <div class="flex min-h-screen">
@@ -75,12 +139,14 @@
       </div>
 
       <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-        <a href="#" class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-ink">
+        <a href="#"
+          class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-ink">
           <i data-lucide="layout-dashboard" class="w-[18px] h-[18px] text-primary shrink-0"></i>
           <span id="sidebar-labels">Dashboard</span>
         </a>
 
-        <p class="sidebar-section-label px-3 pt-4 pb-1 text-[11px] font-bold text-muted tracking-wider uppercase">Student Management</p>
+        <p class="sidebar-section-label px-3 pt-4 pb-1 text-[11px] font-bold text-muted tracking-wider uppercase">
+          Student Management</p>
         <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
           <i data-lucide="users" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Students</span>
         </a>
@@ -88,10 +154,12 @@
           <i data-lucide="school" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Classes</span>
         </a>
         <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
-          <i data-lucide="clipboard-check" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Attendance</span>
+          <i data-lucide="clipboard-check" class="w-[18px] h-[18px] shrink-0"></i><span
+            id="sidebar-labels">Attendance</span>
         </a>
 
-        <p class="sidebar-section-label px-3 pt-4 pb-1 text-[11px] font-bold text-muted tracking-wider uppercase">Academics</p>
+        <p class="sidebar-section-label px-3 pt-4 pb-1 text-[11px] font-bold text-muted tracking-wider uppercase">
+          Academics</p>
         <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
           <i data-lucide="book-open" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Subjects</span>
         </a>
@@ -102,17 +170,20 @@
           <i data-lucide="award" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Results</span>
         </a>
 
-        <p class="sidebar-section-label px-3 pt-4 pb-1 text-[11px] font-bold text-muted tracking-wider uppercase">Staff</p>
+        <p class="sidebar-section-label px-3 pt-4 pb-1 text-[11px] font-bold text-muted tracking-wider uppercase">Staff
+        </p>
         <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
           <i data-lucide="presentation" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Teachers</span>
         </a>
 
-        <p class="sidebar-section-label px-3 pt-4 pb-1 text-[11px] font-bold text-muted tracking-wider uppercase">Finance</p>
+        <p class="sidebar-section-label px-3 pt-4 pb-1 text-[11px] font-bold text-muted tracking-wider uppercase">
+          Finance</p>
         <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
           <i data-lucide="wallet" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Fees</span>
         </a>
 
-        <p class="sidebar-section-label px-3 pt-4 pb-1 text-[11px] font-bold text-muted tracking-wider uppercase">Communication</p>
+        <p class="sidebar-section-label px-3 pt-4 pb-1 text-[11px] font-bold text-muted tracking-wider uppercase">
+          Communication</p>
         <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
           <i data-lucide="megaphone" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Notices</span>
         </a>
@@ -120,10 +191,12 @@
           <i data-lucide="calendar-days" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Events</span>
         </a>
         <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
-          <i data-lucide="message-square" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Messages</span>
+          <i data-lucide="message-square" class="w-[18px] h-[18px] shrink-0"></i><span
+            id="sidebar-labels">Messages</span>
         </a>
 
-        <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted mt-4">
+        <a href="#"
+          class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted mt-4">
           <i data-lucide="settings" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Settings</span>
         </a>
       </nav>
@@ -146,24 +219,30 @@
     <div class="flex-1 min-w-0 flex flex-col">
 
       <!-- NAVBAR -->
-      <header class="h-[72px] bg-white border-b border-line flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30">
+      <header
+        class="h-[72px] bg-white border-b border-line flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30">
         <div class="flex items-center gap-3 flex-1 min-w-0">
           <button id="open-sidebar" class="lg:hidden text-muted"><i data-lucide="menu" class="w-5 h-5"></i></button>
-          <button id="collapse-toggle" class="hidden lg:flex text-muted hover:text-ink"><i data-lucide="panel-left" class="w-5 h-5"></i></button>
+          <button id="collapse-toggle" class="hidden lg:flex text-muted hover:text-ink"><i data-lucide="panel-left"
+              class="w-5 h-5"></i></button>
           <div class="relative max-w-xs w-full hidden sm:block">
             <i data-lucide="search" class="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2"></i>
-            <input type="text" placeholder="Search students..." class="w-full pl-9 pr-3 py-2.5 rounded-inp border border-line text-sm bg-bg focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary" />
+            <input type="text" placeholder="Search students..."
+              class="w-full pl-9 pr-3 py-2.5 rounded-inp border border-line text-sm bg-bg focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary" />
           </div>
         </div>
         <div class="flex items-center gap-1 sm:gap-2">
-          <button class="relative w-10 h-10 flex items-center justify-center text-muted hover:text-ink hover:bg-bg rounded-btn">
+          <button
+            class="relative w-10 h-10 flex items-center justify-center text-muted hover:text-ink hover:bg-bg rounded-btn">
             <i data-lucide="bell" class="w-5 h-5"></i>
-            <span class="absolute top-1.5 right-1.5 w-4 h-4 bg-danger text-white text-[10px] font-bold rounded-full flex items-center justify-center">3</span>
+            <span
+              class="absolute top-1.5 right-1.5 w-4 h-4 bg-danger text-white text-[10px] font-bold rounded-full flex items-center justify-center">3</span>
           </button>
           <button class="w-10 h-10 flex items-center justify-center text-muted hover:text-ink hover:bg-bg rounded-btn">
             <i data-lucide="mail" class="w-5 h-5"></i>
           </button>
-          <button id="dark-toggle" class="w-10 h-10 flex items-center justify-center text-muted hover:text-ink hover:bg-bg rounded-btn">
+          <button id="dark-toggle"
+            class="w-10 h-10 flex items-center justify-center text-muted hover:text-ink hover:bg-bg rounded-btn">
             <i data-lucide="moon" class="w-5 h-5"></i>
           </button>
           <div class="w-px h-7 bg-line mx-1 hidden sm:block"></div>
@@ -172,11 +251,15 @@
               <img src="https://i.pravatar.cc/64?img=12" class="w-9 h-9 rounded-full" />
               <i data-lucide="chevron-down" class="w-4 h-4 text-muted hidden sm:block"></i>
             </button>
-            <div id="profile-menu" class="hidden absolute right-0 top-12 w-48 bg-white border border-line rounded-card shadow-soft py-2 z-40">
-              <a href="#" class="flex items-center gap-2.5 px-4 py-2 text-sm text-ink hover:bg-bg"><i data-lucide="user" class="w-4 h-4 text-muted"></i>Profile</a>
-              <a href="#" class="flex items-center gap-2.5 px-4 py-2 text-sm text-ink hover:bg-bg"><i data-lucide="settings" class="w-4 h-4 text-muted"></i>Settings</a>
+            <div id="profile-menu"
+              class="hidden absolute right-0 top-12 w-48 bg-white border border-line rounded-card shadow-soft py-2 z-40">
+              <a href="#" class="flex items-center gap-2.5 px-4 py-2 text-sm text-ink hover:bg-bg"><i data-lucide="user"
+                  class="w-4 h-4 text-muted"></i>Profile</a>
+              <a href="#" class="flex items-center gap-2.5 px-4 py-2 text-sm text-ink hover:bg-bg"><i
+                  data-lucide="settings" class="w-4 h-4 text-muted"></i>Settings</a>
               <div class="h-px bg-line my-1"></div>
-              <a href="login.html" class="flex items-center gap-2.5 px-4 py-2 text-sm text-danger hover:bg-bg"><i data-lucide="log-out" class="w-4 h-4"></i>Logout</a>
+              <a href="login.html" class="flex items-center gap-2.5 px-4 py-2 text-sm text-danger hover:bg-bg"><i
+                  data-lucide="log-out" class="w-4 h-4"></i>Logout</a>
             </div>
           </div>
         </div>
@@ -199,7 +282,8 @@
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div class="bg-white rounded-card border border-line p-5 shadow-soft">
             <div class="flex items-center justify-between mb-3">
-              <span class="w-10 h-10 rounded-btn bg-primary/10 flex items-center justify-center"><i data-lucide="users" class="w-5 h-5 text-primary"></i></span>
+              <span class="w-10 h-10 rounded-btn bg-primary/10 flex items-center justify-center"><i data-lucide="users"
+                  class="w-5 h-5 text-primary"></i></span>
               <span class="text-xs font-semibold text-success bg-success/10 px-2 py-1 rounded-full">+12%</span>
             </div>
             <p class="text-2xl font-bold text-ink">1,250</p>
@@ -207,21 +291,24 @@
           </div>
           <div class="bg-white rounded-card border border-line p-5 shadow-soft">
             <div class="flex items-center justify-between mb-3">
-              <span class="w-10 h-10 rounded-btn bg-success/10 flex items-center justify-center"><i data-lucide="presentation" class="w-5 h-5 text-success"></i></span>
+              <span class="w-10 h-10 rounded-btn bg-success/10 flex items-center justify-center"><i
+                  data-lucide="presentation" class="w-5 h-5 text-success"></i></span>
             </div>
             <p class="text-2xl font-bold text-ink">95</p>
             <p class="text-xs text-muted mt-1">Teachers</p>
           </div>
           <div class="bg-white rounded-card border border-line p-5 shadow-soft">
             <div class="flex items-center justify-between mb-3">
-              <span class="w-10 h-10 rounded-btn bg-warning/10 flex items-center justify-center"><i data-lucide="wallet" class="w-5 h-5 text-warning"></i></span>
+              <span class="w-10 h-10 rounded-btn bg-warning/10 flex items-center justify-center"><i data-lucide="wallet"
+                  class="w-5 h-5 text-warning"></i></span>
             </div>
             <p class="text-2xl font-bold text-ink">$18,250</p>
             <p class="text-xs text-muted mt-1">Revenue</p>
           </div>
           <div class="bg-white rounded-card border border-line p-5 shadow-soft">
             <div class="flex items-center justify-between mb-3">
-              <span class="w-10 h-10 rounded-btn bg-danger/10 flex items-center justify-center"><i data-lucide="clipboard-check" class="w-5 h-5 text-danger"></i></span>
+              <span class="w-10 h-10 rounded-btn bg-danger/10 flex items-center justify-center"><i
+                  data-lucide="clipboard-check" class="w-5 h-5 text-danger"></i></span>
             </div>
             <p class="text-2xl font-bold text-ink">94%</p>
             <p class="text-xs text-muted mt-1">Attendance</p>
@@ -257,20 +344,28 @@
         <div>
           <h3 class="font-semibold text-sm mb-3">Quick Actions</h3>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <button class="quick-action bg-white rounded-card border border-line p-5 flex flex-col items-center gap-2 text-center">
-              <span class="w-11 h-11 rounded-btn bg-primary/10 flex items-center justify-center"><i data-lucide="user-plus" class="w-5 h-5 text-primary"></i></span>
+            <button
+              class="quick-action bg-white rounded-card border border-line p-5 flex flex-col items-center gap-2 text-center">
+              <span class="w-11 h-11 rounded-btn bg-primary/10 flex items-center justify-center"><i
+                  data-lucide="user-plus" class="w-5 h-5 text-primary"></i></span>
               <span class="text-sm font-medium">Add Student</span>
             </button>
-            <button class="quick-action bg-white rounded-card border border-line p-5 flex flex-col items-center gap-2 text-center">
-              <span class="w-11 h-11 rounded-btn bg-success/10 flex items-center justify-center"><i data-lucide="user-round-plus" class="w-5 h-5 text-success"></i></span>
+            <button
+              class="quick-action bg-white rounded-card border border-line p-5 flex flex-col items-center gap-2 text-center">
+              <span class="w-11 h-11 rounded-btn bg-success/10 flex items-center justify-center"><i
+                  data-lucide="user-round-plus" class="w-5 h-5 text-success"></i></span>
               <span class="text-sm font-medium">Add Teacher</span>
             </button>
-            <button class="quick-action bg-white rounded-card border border-line p-5 flex flex-col items-center gap-2 text-center">
-              <span class="w-11 h-11 rounded-btn bg-warning/10 flex items-center justify-center"><i data-lucide="school" class="w-5 h-5 text-warning"></i></span>
+            <button
+              class="quick-action bg-white rounded-card border border-line p-5 flex flex-col items-center gap-2 text-center">
+              <span class="w-11 h-11 rounded-btn bg-warning/10 flex items-center justify-center"><i data-lucide="school"
+                  class="w-5 h-5 text-warning"></i></span>
               <span class="text-sm font-medium">Create Class</span>
             </button>
-            <button class="quick-action bg-white rounded-card border border-line p-5 flex flex-col items-center gap-2 text-center">
-              <span class="w-11 h-11 rounded-btn bg-danger/10 flex items-center justify-center"><i data-lucide="clipboard-check" class="w-5 h-5 text-danger"></i></span>
+            <button
+              class="quick-action bg-white rounded-card border border-line p-5 flex flex-col items-center gap-2 text-center">
+              <span class="w-11 h-11 rounded-btn bg-danger/10 flex items-center justify-center"><i
+                  data-lucide="clipboard-check" class="w-5 h-5 text-danger"></i></span>
               <span class="text-sm font-medium">Mark Attendance</span>
             </button>
           </div>
@@ -305,20 +400,36 @@
               <h3 class="font-semibold text-sm mb-4">Upcoming Events</h3>
               <ul class="space-y-3">
                 <li class="flex items-center gap-3">
-                  <span class="w-9 h-9 rounded-btn bg-primary/10 flex items-center justify-center shrink-0"><i data-lucide="trophy" class="w-4 h-4 text-primary"></i></span>
-                  <div class="min-w-0"><p class="text-sm font-medium truncate">Sports Day</p><p class="text-xs text-muted">Aug 2</p></div>
+                  <span class="w-9 h-9 rounded-btn bg-primary/10 flex items-center justify-center shrink-0"><i
+                      data-lucide="trophy" class="w-4 h-4 text-primary"></i></span>
+                  <div class="min-w-0">
+                    <p class="text-sm font-medium truncate">Sports Day</p>
+                    <p class="text-xs text-muted">Aug 2</p>
+                  </div>
                 </li>
                 <li class="flex items-center gap-3">
-                  <span class="w-9 h-9 rounded-btn bg-success/10 flex items-center justify-center shrink-0"><i data-lucide="flask-conical" class="w-4 h-4 text-success"></i></span>
-                  <div class="min-w-0"><p class="text-sm font-medium truncate">Science Fair</p><p class="text-xs text-muted">Aug 9</p></div>
+                  <span class="w-9 h-9 rounded-btn bg-success/10 flex items-center justify-center shrink-0"><i
+                      data-lucide="flask-conical" class="w-4 h-4 text-success"></i></span>
+                  <div class="min-w-0">
+                    <p class="text-sm font-medium truncate">Science Fair</p>
+                    <p class="text-xs text-muted">Aug 9</p>
+                  </div>
                 </li>
                 <li class="flex items-center gap-3">
-                  <span class="w-9 h-9 rounded-btn bg-warning/10 flex items-center justify-center shrink-0"><i data-lucide="palmtree" class="w-4 h-4 text-warning"></i></span>
-                  <div class="min-w-0"><p class="text-sm font-medium truncate">Holiday</p><p class="text-xs text-muted">Aug 14</p></div>
+                  <span class="w-9 h-9 rounded-btn bg-warning/10 flex items-center justify-center shrink-0"><i
+                      data-lucide="palmtree" class="w-4 h-4 text-warning"></i></span>
+                  <div class="min-w-0">
+                    <p class="text-sm font-medium truncate">Holiday</p>
+                    <p class="text-xs text-muted">Aug 14</p>
+                  </div>
                 </li>
                 <li class="flex items-center gap-3">
-                  <span class="w-9 h-9 rounded-btn bg-danger/10 flex items-center justify-center shrink-0"><i data-lucide="file-text" class="w-4 h-4 text-danger"></i></span>
-                  <div class="min-w-0"><p class="text-sm font-medium truncate">Exam Week</p><p class="text-xs text-muted">Aug 25</p></div>
+                  <span class="w-9 h-9 rounded-btn bg-danger/10 flex items-center justify-center shrink-0"><i
+                      data-lucide="file-text" class="w-4 h-4 text-danger"></i></span>
+                  <div class="min-w-0">
+                    <p class="text-sm font-medium truncate">Exam Week</p>
+                    <p class="text-xs text-muted">Aug 25</p>
+                  </div>
                 </li>
               </ul>
             </div>
@@ -351,7 +462,8 @@
           </div>
         </div>
 
-        <footer class="text-center text-xs text-muted py-4">Scholaris Admin Prototype — mock data for demonstration only.</footer>
+        <footer class="text-center text-xs text-muted py-4">Scholaris Admin Prototype — mock data for demonstration
+          only.</footer>
       </main>
     </div>
   </div>
@@ -404,7 +516,7 @@
     new Chart(document.getElementById('attendanceChart'), {
       type: 'line',
       data: {
-        labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
         datasets: [{
           data: [88, 92, 90, 95, 94, 91, 94],
           borderColor: '#2563EB',
@@ -428,7 +540,7 @@
     new Chart(document.getElementById('feeChart'), {
       type: 'bar',
       data: {
-        labels: ['Jan','Feb','Mar','Apr','May','Jun'],
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
         datasets: [{
           data: [12000, 15500, 14200, 16800, 17300, 18250],
           backgroundColor: '#2563EB',
@@ -449,7 +561,7 @@
     new Chart(document.getElementById('admissionsChart'), {
       type: 'line',
       data: {
-        labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul'],
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
         datasets: [{
           data: [40, 65, 55, 90, 120, 100, 140],
           borderColor: '#22C55E',
@@ -509,4 +621,5 @@
     lucide.createIcons();
   </script>
 </body>
+
 </html>
