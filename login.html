@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Log in — Scholaris</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: '#2563EB', success: '#22C55E', danger: '#EF4444',
+          warning: '#F59E0B', bg: '#F8FAFC', ink: '#0F172A',
+          muted: '#64748B', line: '#E2E8F0',
+        },
+        fontFamily: { display: ['Sora','sans-serif'], sans: ['Inter','sans-serif'] },
+        borderRadius: { card: '16px', btn: '12px' },
+        boxShadow: { soft: '0 1px 3px rgba(15,23,42,.08)', lift: '0 12px 32px rgba(37,99,235,.14)' }
+      }
+    }
+  }
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .font-display { font-family: 'Sora', sans-serif; }
+  .grain-bg {
+    background-image: radial-gradient(#E2E8F0 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+  .role-card { transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
+  .role-card:hover { transform: translateY(-3px); }
+  .role-card.selected { border-color: #2563EB; box-shadow: 0 0 0 3px rgba(37,99,235,.15); }
+
+  @keyframes toast-in {
+    from { opacity: 0; transform: translate(-50%, 10px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+  }
+  #toast.show { animation: toast-in .25s ease forwards; display: flex; }
+</style>
+</head>
+<body class="antialiased bg-bg grain-bg min-h-screen flex flex-col">
+
+  <header class="px-6 lg:px-10 h-[72px] flex items-center">
+    <a href="index.html" class="flex items-center gap-2.5">
+      <div class="w-9 h-9 rounded-btn bg-primary flex items-center justify-center">
+        <i data-lucide="graduation-cap" class="w-5 h-5 text-white"></i>
+      </div>
+      <span class="font-display font-bold text-lg tracking-tight text-ink">Scholaris</span>
+    </a>
+  </header>
+
+  <main class="flex-1 flex items-center justify-center px-6 py-10">
+    <div class="w-full max-w-md">
+      <div class="bg-white border border-line rounded-card shadow-soft p-8">
+        <div class="text-center mb-8">
+          <h1 class="font-display text-2xl font-bold text-ink tracking-tight">Welcome back</h1>
+          <p class="text-muted text-sm mt-2">Choose how you'd like to sign in</p>
+        </div>
+
+        <div class="space-y-3" id="role-list">
+          <button data-role="admin" class="role-card w-full flex items-center gap-4 p-4 rounded-card border border-line text-left hover:border-primary">
+            <div class="w-11 h-11 shrink-0 rounded-btn bg-primary/10 flex items-center justify-center">
+              <i data-lucide="shield-check" class="w-5 h-5 text-primary"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="font-semibold text-ink text-sm">Admin</p>
+              <p class="text-xs text-muted">Manage the whole school</p>
+            </div>
+            <i data-lucide="chevron-right" class="w-4 h-4 text-muted"></i>
+          </button>
+
+          <button data-role="teacher" class="role-card w-full flex items-center gap-4 p-4 rounded-card border border-line text-left hover:border-primary">
+            <div class="w-11 h-11 shrink-0 rounded-btn bg-success/10 flex items-center justify-center">
+              <i data-lucide="presentation" class="w-5 h-5 text-success"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="font-semibold text-ink text-sm">Teacher</p>
+              <p class="text-xs text-muted">Classes, attendance, grades</p>
+            </div>
+            <i data-lucide="chevron-right" class="w-4 h-4 text-muted"></i>
+          </button>
+
+          <button data-role="student" class="role-card w-full flex items-center gap-4 p-4 rounded-card border border-line text-left hover:border-primary">
+            <div class="w-11 h-11 shrink-0 rounded-btn bg-warning/10 flex items-center justify-center">
+              <i data-lucide="backpack" class="w-5 h-5 text-warning"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="font-semibold text-ink text-sm">Student</p>
+              <p class="text-xs text-muted">Timetable, results, notices</p>
+            </div>
+            <i data-lucide="chevron-right" class="w-4 h-4 text-muted"></i>
+          </button>
+        </div>
+
+        <!-- credential form, appears after a role is picked -->
+        <form id="cred-form" class="hidden mt-6 pt-6 border-t border-line space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-muted mb-1.5">Email</label>
+            <input type="email" placeholder="you@school.edu" class="w-full px-3.5 py-2.5 rounded-[10px] border border-line text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-muted mb-1.5">Password</label>
+            <input type="password" placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-[10px] border border-line text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary" />
+          </div>
+          <button type="submit" id="continue-btn" class="w-full bg-primary text-white font-semibold text-sm py-3 rounded-btn hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+            Continue as <span id="role-label" class="capitalize"></span> <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </form>
+      </div>
+      <p class="text-center text-xs text-muted mt-6">Prototype login — no real authentication is performed.</p>
+    </div>
+  </main>
+
+  <div id="toast" class="hidden fixed bottom-8 left-1/2 -translate-x-1/2 items-center gap-2 bg-ink text-white text-sm font-medium px-4 py-3 rounded-btn shadow-lift z-50">
+    <i data-lucide="info" class="w-4 h-4"></i>
+    <span id="toast-text"></span>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    const roleButtons = document.querySelectorAll('[data-role]');
+    const credForm = document.getElementById('cred-form');
+    const roleLabel = document.getElementById('role-label');
+    let selectedRole = null;
+
+    const destinations = {
+      admin: 'admin-dashboard.html',
+      teacher: 'teacher-dashboard.html',
+      student: 'student-dashboard.html',
+    };
+
+    roleButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        roleButtons.forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedRole = btn.dataset.role;
+        roleLabel.textContent = selectedRole;
+        credForm.classList.remove('hidden');
+        credForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
+    });
+
+    credForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (destinations[selectedRole]) {
+        window.location.href = destinations[selectedRole];
+      } else {
+        showToast(`The ${selectedRole} portal is coming soon in this prototype.`);
+      }
+    });
+
+    function showToast(text) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-text').textContent = text;
+      toast.classList.remove('hidden');
+      toast.classList.add('show');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => {
+        toast.classList.add('hidden');
+        toast.classList.remove('show');
+      }, 3200);
+    }
+  </script>
+</body>
+</html>

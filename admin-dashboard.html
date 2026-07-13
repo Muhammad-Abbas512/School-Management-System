@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dashboard — Scholaris Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          primary: '#2563EB', success: '#22C55E', danger: '#EF4444',
+          warning: '#F59E0B', bg: '#F8FAFC', ink: '#0F172A',
+          muted: '#64748B', line: '#E2E8F0',
+        },
+        fontFamily: { sans: ['Inter','sans-serif'] },
+        borderRadius: { card: '16px', btn: '12px', inp: '10px' },
+        boxShadow: { soft: '0 1px 3px rgba(15,23,42,.08)' }
+      }
+    }
+  }
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 8px; }
+
+  .sidebar-link { transition: background-color .15s ease, color .15s ease; }
+  .sidebar-link.active { background: #2563EB; color: white; }
+  .sidebar-link.active svg { color: white; }
+  .sidebar-link:not(.active):hover { background: #F1F5F9; }
+
+  #sidebar { transition: transform .25s ease, width .2s ease; }
+  #overlay { transition: opacity .2s ease; }
+
+  .collapsed #sidebar-labels, .collapsed .sidebar-section-label, .collapsed #sidebar-footer-text { display: none; }
+  .collapsed #sidebar { width: 84px; }
+  .collapsed #brand-text { display: none; }
+
+  @media (max-width: 1023px) {
+    #sidebar { position: fixed; z-index: 50; top: 0; left: 0; height: 100vh; transform: translateX(-100%); }
+    #sidebar.open { transform: translateX(0); }
+  }
+
+  .quick-action:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(15,23,42,.08); }
+  .quick-action { transition: transform .15s ease, box-shadow .15s ease; }
+
+  .timeline-dot::before {
+    content: ''; position: absolute; left: 5px; top: 22px; bottom: -22px; width: 2px; background: #E2E8F0;
+  }
+  .timeline-item:last-child .timeline-dot::before { display: none; }
+</style>
+</head>
+<body class="bg-bg text-ink antialiased">
+
+  <div class="flex min-h-screen">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="w-[260px] bg-white border-r border-line flex flex-col shrink-0">
+      <div class="h-[72px] flex items-center justify-between px-5 border-b border-line">
+        <a href="index.html" class="flex items-center gap-2.5 min-w-0">
+          <div class="w-9 h-9 rounded-btn bg-primary flex items-center justify-center shrink-0">
+            <i data-lucide="graduation-cap" class="w-5 h-5 text-white"></i>
+          </div>
+          <span id="brand-text" class="font-bold text-base tracking-tight truncate">Scholaris</span>
+        </a>
+        <button id="close-sidebar" class="lg:hidden text-muted"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+        <a href="#" class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-ink">
+          <i data-lucide="layout-dashboard" class="w-[18px] h-[18px] text-primary shrink-0"></i>
+          <span id="sidebar-labels">Dashboard</span>
+        </a>
+
+        <p class="sidebar-section-label px-3 pt-4 pb-1 text-[11px] font-bold text-muted tracking-wider uppercase">Student Management</p>
+        <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+          <i data-lucide="users" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Students</span>
+        </a>
+        <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+          <i data-lucide="school" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Classes</span>
+        </a>
+        <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+          <i data-lucide="clipboard-check" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Attendance</span>
+        </a>
+
+        <p class="sidebar-section-label px-3 pt-4 pb-1 text-[11px] font-bold text-muted tracking-wider uppercase">Academics</p>
+        <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+          <i data-lucide="book-open" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Subjects</span>
+        </a>
+        <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+          <i data-lucide="file-text" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Exams</span>
+        </a>
+        <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+          <i data-lucide="award" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Results</span>
+        </a>
+
+        <p class="sidebar-section-label px-3 pt-4 pb-1 text-[11px] font-bold text-muted tracking-wider uppercase">Staff</p>
+        <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+          <i data-lucide="presentation" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Teachers</span>
+        </a>
+
+        <p class="sidebar-section-label px-3 pt-4 pb-1 text-[11px] font-bold text-muted tracking-wider uppercase">Finance</p>
+        <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+          <i data-lucide="wallet" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Fees</span>
+        </a>
+
+        <p class="sidebar-section-label px-3 pt-4 pb-1 text-[11px] font-bold text-muted tracking-wider uppercase">Communication</p>
+        <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+          <i data-lucide="megaphone" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Notices</span>
+        </a>
+        <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+          <i data-lucide="calendar-days" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Events</span>
+        </a>
+        <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+          <i data-lucide="message-square" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Messages</span>
+        </a>
+
+        <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted mt-4">
+          <i data-lucide="settings" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Settings</span>
+        </a>
+      </nav>
+
+      <div id="sidebar-footer-text" class="border-t border-line p-4 flex items-center gap-3">
+        <img src="https://i.pravatar.cc/64?img=12" class="w-9 h-9 rounded-full shrink-0" />
+        <div class="min-w-0 flex-1">
+          <p class="text-sm font-semibold truncate">Abbas Raza</p>
+          <p class="text-xs text-muted truncate">Administrator</p>
+        </div>
+        <button class="text-muted hover:text-danger" title="Log out" onclick="window.location.href='login.html'">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </aside>
+
+    <div id="overlay" class="hidden fixed inset-0 bg-ink/40 z-40 lg:hidden"></div>
+
+    <!-- MAIN -->
+    <div class="flex-1 min-w-0 flex flex-col">
+
+      <!-- NAVBAR -->
+      <header class="h-[72px] bg-white border-b border-line flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
+          <button id="open-sidebar" class="lg:hidden text-muted"><i data-lucide="menu" class="w-5 h-5"></i></button>
+          <button id="collapse-toggle" class="hidden lg:flex text-muted hover:text-ink"><i data-lucide="panel-left" class="w-5 h-5"></i></button>
+          <div class="relative max-w-xs w-full hidden sm:block">
+            <i data-lucide="search" class="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2"></i>
+            <input type="text" placeholder="Search students..." class="w-full pl-9 pr-3 py-2.5 rounded-inp border border-line text-sm bg-bg focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary" />
+          </div>
+        </div>
+        <div class="flex items-center gap-1 sm:gap-2">
+          <button class="relative w-10 h-10 flex items-center justify-center text-muted hover:text-ink hover:bg-bg rounded-btn">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+            <span class="absolute top-1.5 right-1.5 w-4 h-4 bg-danger text-white text-[10px] font-bold rounded-full flex items-center justify-center">3</span>
+          </button>
+          <button class="w-10 h-10 flex items-center justify-center text-muted hover:text-ink hover:bg-bg rounded-btn">
+            <i data-lucide="mail" class="w-5 h-5"></i>
+          </button>
+          <button id="dark-toggle" class="w-10 h-10 flex items-center justify-center text-muted hover:text-ink hover:bg-bg rounded-btn">
+            <i data-lucide="moon" class="w-5 h-5"></i>
+          </button>
+          <div class="w-px h-7 bg-line mx-1 hidden sm:block"></div>
+          <div class="relative">
+            <button id="profile-btn" class="flex items-center gap-2 pl-1">
+              <img src="https://i.pravatar.cc/64?img=12" class="w-9 h-9 rounded-full" />
+              <i data-lucide="chevron-down" class="w-4 h-4 text-muted hidden sm:block"></i>
+            </button>
+            <div id="profile-menu" class="hidden absolute right-0 top-12 w-48 bg-white border border-line rounded-card shadow-soft py-2 z-40">
+              <a href="#" class="flex items-center gap-2.5 px-4 py-2 text-sm text-ink hover:bg-bg"><i data-lucide="user" class="w-4 h-4 text-muted"></i>Profile</a>
+              <a href="#" class="flex items-center gap-2.5 px-4 py-2 text-sm text-ink hover:bg-bg"><i data-lucide="settings" class="w-4 h-4 text-muted"></i>Settings</a>
+              <div class="h-px bg-line my-1"></div>
+              <a href="login.html" class="flex items-center gap-2.5 px-4 py-2 text-sm text-danger hover:bg-bg"><i data-lucide="log-out" class="w-4 h-4"></i>Logout</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- CONTENT -->
+      <main class="flex-1 p-4 sm:p-6 space-y-6 max-w-[1440px] w-full mx-auto">
+
+        <!-- Welcome card -->
+        <div class="bg-primary rounded-card p-6 sm:p-8 flex items-center justify-between overflow-hidden relative">
+          <div class="relative z-10">
+            <p class="text-blue-100 text-sm font-medium">Good Morning,</p>
+            <h1 class="text-2xl sm:text-3xl font-bold text-white mt-1">Abbas</h1>
+            <p class="text-blue-100 text-sm mt-2">Have a productive day! 3 tasks need your attention.</p>
+          </div>
+          <i data-lucide="sun" class="w-24 h-24 text-white/15 absolute -right-4 -bottom-4 hidden sm:block"></i>
+        </div>
+
+        <!-- Stats cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white rounded-card border border-line p-5 shadow-soft">
+            <div class="flex items-center justify-between mb-3">
+              <span class="w-10 h-10 rounded-btn bg-primary/10 flex items-center justify-center"><i data-lucide="users" class="w-5 h-5 text-primary"></i></span>
+              <span class="text-xs font-semibold text-success bg-success/10 px-2 py-1 rounded-full">+12%</span>
+            </div>
+            <p class="text-2xl font-bold text-ink">1,250</p>
+            <p class="text-xs text-muted mt-1">Total Students</p>
+          </div>
+          <div class="bg-white rounded-card border border-line p-5 shadow-soft">
+            <div class="flex items-center justify-between mb-3">
+              <span class="w-10 h-10 rounded-btn bg-success/10 flex items-center justify-center"><i data-lucide="presentation" class="w-5 h-5 text-success"></i></span>
+            </div>
+            <p class="text-2xl font-bold text-ink">95</p>
+            <p class="text-xs text-muted mt-1">Teachers</p>
+          </div>
+          <div class="bg-white rounded-card border border-line p-5 shadow-soft">
+            <div class="flex items-center justify-between mb-3">
+              <span class="w-10 h-10 rounded-btn bg-warning/10 flex items-center justify-center"><i data-lucide="wallet" class="w-5 h-5 text-warning"></i></span>
+            </div>
+            <p class="text-2xl font-bold text-ink">$18,250</p>
+            <p class="text-xs text-muted mt-1">Revenue</p>
+          </div>
+          <div class="bg-white rounded-card border border-line p-5 shadow-soft">
+            <div class="flex items-center justify-between mb-3">
+              <span class="w-10 h-10 rounded-btn bg-danger/10 flex items-center justify-center"><i data-lucide="clipboard-check" class="w-5 h-5 text-danger"></i></span>
+            </div>
+            <p class="text-2xl font-bold text-ink">94%</p>
+            <p class="text-xs text-muted mt-1">Attendance</p>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid lg:grid-cols-2 gap-4">
+          <div class="bg-white rounded-card border border-line p-5 shadow-soft">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-semibold text-sm">Attendance</h3>
+              <span class="text-xs text-muted">Last 7 days</span>
+            </div>
+            <div class="h-56"><canvas id="attendanceChart"></canvas></div>
+          </div>
+          <div class="bg-white rounded-card border border-line p-5 shadow-soft">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-semibold text-sm">Fee Collection</h3>
+              <span class="text-xs text-muted">This term</span>
+            </div>
+            <div class="h-56"><canvas id="feeChart"></canvas></div>
+          </div>
+        </div>
+        <div class="bg-white rounded-card border border-line p-5 shadow-soft">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-semibold text-sm">Admissions</h3>
+            <span class="text-xs text-muted">This year</span>
+          </div>
+          <div class="h-48"><canvas id="admissionsChart"></canvas></div>
+        </div>
+
+        <!-- Quick actions -->
+        <div>
+          <h3 class="font-semibold text-sm mb-3">Quick Actions</h3>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <button class="quick-action bg-white rounded-card border border-line p-5 flex flex-col items-center gap-2 text-center">
+              <span class="w-11 h-11 rounded-btn bg-primary/10 flex items-center justify-center"><i data-lucide="user-plus" class="w-5 h-5 text-primary"></i></span>
+              <span class="text-sm font-medium">Add Student</span>
+            </button>
+            <button class="quick-action bg-white rounded-card border border-line p-5 flex flex-col items-center gap-2 text-center">
+              <span class="w-11 h-11 rounded-btn bg-success/10 flex items-center justify-center"><i data-lucide="user-round-plus" class="w-5 h-5 text-success"></i></span>
+              <span class="text-sm font-medium">Add Teacher</span>
+            </button>
+            <button class="quick-action bg-white rounded-card border border-line p-5 flex flex-col items-center gap-2 text-center">
+              <span class="w-11 h-11 rounded-btn bg-warning/10 flex items-center justify-center"><i data-lucide="school" class="w-5 h-5 text-warning"></i></span>
+              <span class="text-sm font-medium">Create Class</span>
+            </button>
+            <button class="quick-action bg-white rounded-card border border-line p-5 flex flex-col items-center gap-2 text-center">
+              <span class="w-11 h-11 rounded-btn bg-danger/10 flex items-center justify-center"><i data-lucide="clipboard-check" class="w-5 h-5 text-danger"></i></span>
+              <span class="text-sm font-medium">Mark Attendance</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Table + side cards -->
+        <div class="grid lg:grid-cols-3 gap-4">
+          <div class="lg:col-span-2 bg-white rounded-card border border-line shadow-soft overflow-hidden">
+            <div class="flex items-center justify-between p-5 pb-0">
+              <h3 class="font-semibold text-sm">Recent Students</h3>
+              <a href="#" class="text-xs font-semibold text-primary">View all</a>
+            </div>
+            <div class="overflow-x-auto mt-4">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="text-left text-xs text-muted border-y border-line">
+                    <th class="font-medium py-2.5 px-5">Student</th>
+                    <th class="font-medium py-2.5 px-3">Roll No</th>
+                    <th class="font-medium py-2.5 px-3">Class</th>
+                    <th class="font-medium py-2.5 px-3 hidden sm:table-cell">Phone</th>
+                    <th class="font-medium py-2.5 px-3">Status</th>
+                    <th class="font-medium py-2.5 px-5 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="students-tbody" class="divide-y divide-line"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="bg-white rounded-card border border-line shadow-soft p-5">
+              <h3 class="font-semibold text-sm mb-4">Upcoming Events</h3>
+              <ul class="space-y-3">
+                <li class="flex items-center gap-3">
+                  <span class="w-9 h-9 rounded-btn bg-primary/10 flex items-center justify-center shrink-0"><i data-lucide="trophy" class="w-4 h-4 text-primary"></i></span>
+                  <div class="min-w-0"><p class="text-sm font-medium truncate">Sports Day</p><p class="text-xs text-muted">Aug 2</p></div>
+                </li>
+                <li class="flex items-center gap-3">
+                  <span class="w-9 h-9 rounded-btn bg-success/10 flex items-center justify-center shrink-0"><i data-lucide="flask-conical" class="w-4 h-4 text-success"></i></span>
+                  <div class="min-w-0"><p class="text-sm font-medium truncate">Science Fair</p><p class="text-xs text-muted">Aug 9</p></div>
+                </li>
+                <li class="flex items-center gap-3">
+                  <span class="w-9 h-9 rounded-btn bg-warning/10 flex items-center justify-center shrink-0"><i data-lucide="palmtree" class="w-4 h-4 text-warning"></i></span>
+                  <div class="min-w-0"><p class="text-sm font-medium truncate">Holiday</p><p class="text-xs text-muted">Aug 14</p></div>
+                </li>
+                <li class="flex items-center gap-3">
+                  <span class="w-9 h-9 rounded-btn bg-danger/10 flex items-center justify-center shrink-0"><i data-lucide="file-text" class="w-4 h-4 text-danger"></i></span>
+                  <div class="min-w-0"><p class="text-sm font-medium truncate">Exam Week</p><p class="text-xs text-muted">Aug 25</p></div>
+                </li>
+              </ul>
+            </div>
+
+            <div class="bg-white rounded-card border border-line shadow-soft p-5">
+              <h3 class="font-semibold text-sm mb-4">Recent Activity</h3>
+              <ul class="space-y-4">
+                <li class="timeline-item relative pl-5">
+                  <span class="timeline-dot absolute left-0 top-1.5 w-2.5 h-2.5 rounded-full bg-primary"></span>
+                  <p class="text-sm text-ink">Teacher added attendance</p>
+                  <p class="text-xs text-muted">10 min ago</p>
+                </li>
+                <li class="timeline-item relative pl-5">
+                  <span class="timeline-dot absolute left-0 top-1.5 w-2.5 h-2.5 rounded-full bg-success"></span>
+                  <p class="text-sm text-ink">Fee submitted</p>
+                  <p class="text-xs text-muted">42 min ago</p>
+                </li>
+                <li class="timeline-item relative pl-5">
+                  <span class="timeline-dot absolute left-0 top-1.5 w-2.5 h-2.5 rounded-full bg-warning"></span>
+                  <p class="text-sm text-ink">New student registered</p>
+                  <p class="text-xs text-muted">1 hr ago</p>
+                </li>
+                <li class="timeline-item relative pl-5">
+                  <span class="timeline-dot absolute left-0 top-1.5 w-2.5 h-2.5 rounded-full bg-danger"></span>
+                  <p class="text-sm text-ink">Exam scheduled</p>
+                  <p class="text-xs text-muted">3 hr ago</p>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <footer class="text-center text-xs text-muted py-4">Scholaris Admin Prototype — mock data for demonstration only.</footer>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    // ---- Sidebar mobile toggle ----
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    document.getElementById('open-sidebar').addEventListener('click', () => {
+      sidebar.classList.add('open');
+      overlay.classList.remove('hidden');
+    });
+    document.getElementById('close-sidebar').addEventListener('click', closeSidebar);
+    overlay.addEventListener('click', closeSidebar);
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      overlay.classList.add('hidden');
+    }
+
+    // ---- Sidebar collapse (desktop) ----
+    document.getElementById('collapse-toggle').addEventListener('click', () => {
+      document.body.classList.toggle('collapsed');
+    });
+
+    // ---- Profile dropdown ----
+    const profileBtn = document.getElementById('profile-btn');
+    const profileMenu = document.getElementById('profile-menu');
+    profileBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      profileMenu.classList.toggle('hidden');
+    });
+    document.addEventListener('click', () => profileMenu.classList.add('hidden'));
+
+    // ---- Dark mode toggle (visual only) ----
+    document.getElementById('dark-toggle').addEventListener('click', function () {
+      document.documentElement.classList.toggle('dark');
+      const icon = this.querySelector('i');
+      const isDark = document.documentElement.classList.contains('dark');
+      icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+      lucide.createIcons();
+    });
+
+    // ---- Charts ----
+    const chartFont = { family: 'Inter', size: 11 };
+    Chart.defaults.font = chartFont;
+    Chart.defaults.color = '#64748B';
+
+    new Chart(document.getElementById('attendanceChart'), {
+      type: 'line',
+      data: {
+        labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+        datasets: [{
+          data: [88, 92, 90, 95, 94, 91, 94],
+          borderColor: '#2563EB',
+          backgroundColor: 'rgba(37,99,235,0.08)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 3,
+          pointBackgroundColor: '#2563EB',
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { min: 80, max: 100, grid: { color: '#E2E8F0' } },
+          x: { grid: { display: false } }
+        },
+        maintainAspectRatio: false
+      }
+    });
+
+    new Chart(document.getElementById('feeChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Jan','Feb','Mar','Apr','May','Jun'],
+        datasets: [{
+          data: [12000, 15500, 14200, 16800, 17300, 18250],
+          backgroundColor: '#2563EB',
+          borderRadius: 6,
+          maxBarThickness: 32,
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { grid: { color: '#E2E8F0' } },
+          x: { grid: { display: false } }
+        },
+        maintainAspectRatio: false
+      }
+    });
+
+    new Chart(document.getElementById('admissionsChart'), {
+      type: 'line',
+      data: {
+        labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul'],
+        datasets: [{
+          data: [40, 65, 55, 90, 120, 100, 140],
+          borderColor: '#22C55E',
+          backgroundColor: 'rgba(34,197,94,0.1)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 0,
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { grid: { color: '#E2E8F0' } },
+          x: { grid: { display: false } }
+        },
+        maintainAspectRatio: false
+      }
+    });
+
+    // ---- Recent students table (mock data) ----
+    const students = [
+      { name: 'Amina Khalid', roll: '10-A-14', cls: '10-A', phone: '+92 300 1234567', status: 'Present', img: 25 },
+      { name: 'Bilal Ahmed', roll: '9-B-07', cls: '9-B', phone: '+92 301 7654321', status: 'Present', img: 33 },
+      { name: 'Fatima Noor', roll: '8-C-22', cls: '8-C', phone: '+92 302 9988776', status: 'Absent', img: 45 },
+      { name: 'Hamza Tariq', roll: '10-A-02', cls: '10-A', phone: '+92 303 4455667', status: 'Present', img: 51 },
+      { name: 'Sara Iqbal', roll: '7-A-19', cls: '7-A', phone: '+92 304 1122334', status: 'Late', img: 47 },
+    ];
+    const statusStyle = {
+      Present: 'bg-success/10 text-success',
+      Absent: 'bg-danger/10 text-danger',
+      Late: 'bg-warning/10 text-warning',
+    };
+    const tbody = document.getElementById('students-tbody');
+    students.forEach(s => {
+      const tr = document.createElement('tr');
+      tr.className = 'hover:bg-bg';
+      tr.innerHTML = `
+        <td class="py-3 px-5">
+          <div class="flex items-center gap-3">
+            <img src="https://i.pravatar.cc/64?img=${s.img}" class="w-8 h-8 rounded-full" />
+            <span class="font-medium text-ink whitespace-nowrap">${s.name}</span>
+          </div>
+        </td>
+        <td class="py-3 px-3 text-muted whitespace-nowrap">${s.roll}</td>
+        <td class="py-3 px-3 text-muted whitespace-nowrap">${s.cls}</td>
+        <td class="py-3 px-3 text-muted whitespace-nowrap hidden sm:table-cell">${s.phone}</td>
+        <td class="py-3 px-3"><span class="text-xs font-semibold px-2.5 py-1 rounded-full ${statusStyle[s.status]}">${s.status}</span></td>
+        <td class="py-3 px-5 text-right">
+          <div class="inline-flex items-center gap-1 text-muted">
+            <button class="w-7 h-7 flex items-center justify-center hover:text-primary hover:bg-primary/10 rounded-md"><i data-lucide="eye" class="w-3.5 h-3.5"></i></button>
+            <button class="w-7 h-7 flex items-center justify-center hover:text-success hover:bg-success/10 rounded-md"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
+            <button class="w-7 h-7 flex items-center justify-center hover:text-danger hover:bg-danger/10 rounded-md"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+          </div>
+        </td>`;
+      tbody.appendChild(tr);
+    });
+    lucide.createIcons();
+  </script>
+</body>
+</html>
