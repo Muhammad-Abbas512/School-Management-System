@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Results — Scholaris Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          primary: '#2563EB', success: '#22C55E', danger: '#EF4444',
+          warning: '#F59E0B', bg: '#F8FAFC', ink: '#0F172A',
+          muted: '#64748B', line: '#E2E8F0',
+        },
+        fontFamily: { sans: ['Inter','sans-serif'] },
+        borderRadius: { card: '16px', btn: '12px', inp: '10px' },
+        boxShadow: { soft: '0 1px 3px rgba(15,23,42,.08)' }
+      }
+    }
+  }
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 8px; }
+
+  .sidebar-link { transition: background-color .15s ease, color .15s ease; }
+  .sidebar-link.active { background: #2563EB; color: white; }
+  .sidebar-link.active svg { color: white; }
+  .sidebar-link:not(.active):hover { background: #F1F5F9; }
+
+  #sidebar { transition: transform .25s ease, width .2s ease; }
+  #overlay { transition: opacity .2s ease; }
+
+  .collapsed #sidebar-labels, .collapsed .sidebar-section-label, .collapsed #sidebar-footer-text { display: none; }
+  .collapsed #sidebar { width: 84px; }
+  .collapsed #brand-text { display: none; }
+
+  @media (max-width: 1023px) {
+    #sidebar { position: fixed; z-index: 50; top: 0; left: 0; height: 100vh; transform: translateX(-100%); }
+    #sidebar.open { transform: translateX(0); }
+  }
+
+  .quick-action:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(15,23,42,.08); }
+  .quick-action { transition: transform .15s ease, box-shadow .15s ease; }
+
+  .timeline-dot::before {
+    content: ''; position: absolute; left: 5px; top: 22px; bottom: -22px; width: 2px; background: #E2E8F0;
+  }
+  .timeline-item:last-child .timeline-dot::before { display: none; }
+
+  .modal-backdrop { background: rgba(15,23,42,.5); }
+  .tab-btn.active { background: #2563EB; color: #fff; }
+  .tab-btn { transition: background-color .15s ease, color .15s ease; }
+  input[type="text"], input[type="number"], input[type="date"], input[type="email"], input[type="tel"], select, textarea {
+    outline: none;
+  }
+  input:focus, select:focus, textarea:focus { box-shadow: 0 0 0 3px rgba(37,99,235,.15); border-color:#2563EB; }
+</style>
+</head>
+<body class="bg-bg text-ink antialiased">
+
+  <div class="flex min-h-screen">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="w-[260px] bg-white border-r border-line flex flex-col shrink-0">
+      <div class="h-[72px] flex items-center justify-between px-5 border-b border-line">
+        <a href="index.html" class="flex items-center gap-2.5 min-w-0">
+          <div class="w-9 h-9 rounded-btn bg-primary flex items-center justify-center shrink-0">
+            <i data-lucide="graduation-cap" class="w-5 h-5 text-white"></i>
+          </div>
+          <span id="brand-text" class="font-bold text-base tracking-tight truncate">Scholaris</span>
+        </a>
+        <button id="close-sidebar" class="lg:hidden text-muted"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+<a href="index.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+  <i data-lucide="layout-dashboard" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Dashboard</span>
+</a>
+<p class="sidebar-section-label px-3 pt-4 pb-1 text-[11px] font-bold text-muted tracking-wider uppercase">Student Management</p>
+<a href="students.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+  <i data-lucide="users" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Students</span>
+</a>
+<a href="classes.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+  <i data-lucide="school" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Classes</span>
+</a>
+<a href="attendance.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+  <i data-lucide="clipboard-check" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Attendance</span>
+</a>
+<p class="sidebar-section-label px-3 pt-4 pb-1 text-[11px] font-bold text-muted tracking-wider uppercase">Academics</p>
+<a href="subjects.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+  <i data-lucide="book-open" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Subjects</span>
+</a>
+<a href="exams.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+  <i data-lucide="file-text" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Exams</span>
+</a>
+<a href="results.html" class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-ink">
+  <i data-lucide="award" class="w-[18px] h-[18px] text-primary shrink-0"></i><span id="sidebar-labels">Results</span>
+</a>
+<p class="sidebar-section-label px-3 pt-4 pb-1 text-[11px] font-bold text-muted tracking-wider uppercase">Staff</p>
+<a href="teachers.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+  <i data-lucide="presentation" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Teachers</span>
+</a>
+<p class="sidebar-section-label px-3 pt-4 pb-1 text-[11px] font-bold text-muted tracking-wider uppercase">Finance</p>
+<a href="fees.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+  <i data-lucide="wallet" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Fees</span>
+</a>
+<p class="sidebar-section-label px-3 pt-4 pb-1 text-[11px] font-bold text-muted tracking-wider uppercase">Communication</p>
+<a href="notices.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+  <i data-lucide="megaphone" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Notices</span>
+</a>
+<a href="events.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+  <i data-lucide="calendar-days" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Events</span>
+</a>
+<a href="messages.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+  <i data-lucide="message-square" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Messages</span>
+</a>
+<a href="settings.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted mt-4">
+  <i data-lucide="settings" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Settings</span>
+</a>
+      </nav>
+
+      <div id="sidebar-footer-text" class="border-t border-line p-4 flex items-center gap-3">
+        <img src="https://i.pravatar.cc/64?img=12" class="w-9 h-9 rounded-full shrink-0" />
+        <div class="min-w-0 flex-1">
+          <p class="text-sm font-semibold truncate">Abbas Raza</p>
+          <p class="text-xs text-muted truncate">Administrator</p>
+        </div>
+        <button class="text-muted hover:text-danger" title="Log out" onclick="window.location.href='login.html'">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </aside>
+
+    <div id="overlay" class="hidden fixed inset-0 bg-ink/40 z-40 lg:hidden"></div>
+
+    <!-- MAIN -->
+    <div class="flex-1 min-w-0 flex flex-col">
+
+      <!-- NAVBAR -->
+      <header class="h-[72px] bg-white border-b border-line flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
+          <button id="open-sidebar" class="lg:hidden text-muted"><i data-lucide="menu" class="w-5 h-5"></i></button>
+          <button id="collapse-toggle" class="hidden lg:flex text-muted hover:text-ink"><i data-lucide="panel-left" class="w-5 h-5"></i></button>
+          <div class="relative max-w-xs w-full hidden sm:block">
+            <i data-lucide="search" class="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2"></i>
+            <input type="text" placeholder="Search results..." class="w-full pl-9 pr-3 py-2.5 rounded-inp border border-line text-sm bg-bg focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary" />
+          </div>
+        </div>
+        <div class="flex items-center gap-1 sm:gap-2">
+          <button class="relative w-10 h-10 flex items-center justify-center text-muted hover:text-ink hover:bg-bg rounded-btn">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+            <span class="absolute top-1.5 right-1.5 w-4 h-4 bg-danger text-white text-[10px] font-bold rounded-full flex items-center justify-center">3</span>
+          </button>
+          <button class="w-10 h-10 flex items-center justify-center text-muted hover:text-ink hover:bg-bg rounded-btn">
+            <i data-lucide="mail" class="w-5 h-5"></i>
+          </button>
+          <button id="dark-toggle" class="w-10 h-10 flex items-center justify-center text-muted hover:text-ink hover:bg-bg rounded-btn">
+            <i data-lucide="moon" class="w-5 h-5"></i>
+          </button>
+          <div class="w-px h-7 bg-line mx-1 hidden sm:block"></div>
+          <div class="relative">
+            <button id="profile-btn" class="flex items-center gap-2 pl-1">
+              <img src="https://i.pravatar.cc/64?img=12" class="w-9 h-9 rounded-full" />
+              <i data-lucide="chevron-down" class="w-4 h-4 text-muted hidden sm:block"></i>
+            </button>
+            <div id="profile-menu" class="hidden absolute right-0 top-12 w-48 bg-white border border-line rounded-card shadow-soft py-2 z-40">
+              <a href="#" class="flex items-center gap-2.5 px-4 py-2 text-sm text-ink hover:bg-bg"><i data-lucide="user" class="w-4 h-4 text-muted"></i>Profile</a>
+              <a href="settings.html" class="flex items-center gap-2.5 px-4 py-2 text-sm text-ink hover:bg-bg"><i data-lucide="settings" class="w-4 h-4 text-muted"></i>Settings</a>
+              <div class="h-px bg-line my-1"></div>
+              <a href="login.html" class="flex items-center gap-2.5 px-4 py-2 text-sm text-danger hover:bg-bg"><i data-lucide="log-out" class="w-4 h-4"></i>Logout</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- CONTENT -->
+      <main class="flex-1 p-4 sm:p-6 space-y-6 max-w-[1440px] w-full mx-auto">
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div><h1 class="text-xl font-bold text-ink">Results</h1><p class="text-sm text-muted mt-0.5">Class-wise exam performance overview</p></div>
+          <select id="resultClass" onchange="renderResults()" class="text-sm border border-line rounded-inp px-3 py-2.5 bg-white"><option>10-A</option><option>9-B</option><option>8-C</option></select>
+        </div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white rounded-card border border-line p-4 shadow-soft"><p class="text-xl font-bold text-ink" id="avgScore">—</p><p class="text-xs text-muted mt-1">Class Average</p></div>
+          <div class="bg-white rounded-card border border-line p-4 shadow-soft"><p class="text-xl font-bold text-success" id="passRate">—</p><p class="text-xs text-muted mt-1">Pass Rate</p></div>
+          <div class="bg-white rounded-card border border-line p-4 shadow-soft"><p class="text-xl font-bold text-ink" id="topScore">—</p><p class="text-xs text-muted mt-1">Highest Score</p></div>
+          <div class="bg-white rounded-card border border-line p-4 shadow-soft"><p class="text-xl font-bold text-danger" id="lowScore">—</p><p class="text-xs text-muted mt-1">Lowest Score</p></div>
+        </div>
+        <div class="bg-white rounded-card border border-line shadow-soft overflow-hidden">
+          <div class="overflow-x-auto"><table class="w-full text-sm">
+            <thead><tr class="text-left text-xs text-muted border-b border-line">
+              <th class="font-medium py-2.5 px-5">Student</th><th class="font-medium py-2.5 px-3">Roll No</th><th class="font-medium py-2.5 px-3">Score</th><th class="font-medium py-2.5 px-3">Grade</th><th class="font-medium py-2.5 px-5 text-right">Status</th>
+            </tr></thead>
+            <tbody id="results-tbody" class="divide-y divide-line"></tbody>
+          </table></div>
+        </div>
+
+        <footer class="text-center text-xs text-muted py-4">Scholaris Admin Prototype — mock data for demonstration only.</footer>
+      </main>
+    </div>
+  </div>
+
+
+
+  <script>
+    lucide.createIcons();
+
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    document.getElementById('open-sidebar').addEventListener('click', () => {
+      sidebar.classList.add('open');
+      overlay.classList.remove('hidden');
+    });
+    document.getElementById('close-sidebar').addEventListener('click', closeSidebar);
+    overlay.addEventListener('click', closeSidebar);
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      overlay.classList.add('hidden');
+    }
+
+    document.getElementById('collapse-toggle').addEventListener('click', () => {
+      document.body.classList.toggle('collapsed');
+    });
+
+    const profileBtn = document.getElementById('profile-btn');
+    const profileMenu = document.getElementById('profile-menu');
+    profileBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      profileMenu.classList.toggle('hidden');
+    });
+    document.addEventListener('click', () => profileMenu.classList.add('hidden'));
+
+    document.getElementById('dark-toggle').addEventListener('click', function () {
+      document.documentElement.classList.toggle('dark');
+      const icon = this.querySelector('i');
+      const isDark = document.documentElement.classList.contains('dark');
+      icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+      lucide.createIcons();
+    });
+
+    function toast(msg) {
+      const el = document.createElement('div');
+      el.className = 'fixed bottom-5 right-5 z-[60] bg-ink text-white text-sm font-medium px-4 py-3 rounded-btn shadow-soft';
+      el.textContent = msg;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 2200);
+    }
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+
+    const resultSets = {
+      '10-A': [['Amina Khalid','10-A-14',92],['Hamza Tariq','10-A-02',78],['Noman Sheikh','10-A-19',55],['Rida Fatima','10-A-05',88]],
+      '9-B': [['Bilal Ahmed','9-B-07',67],['Zainab Farooq','9-B-25',95],['Owais Ejaz','9-B-11',41]],
+      '8-C': [['Fatima Noor','8-C-22',73],['Ali Raza','8-C-06',82]],
+    };
+    function gradeOf(score) { return score>=90?'A+':score>=80?'A':score>=70?'B':score>=60?'C':score>=50?'D':'F'; }
+    function renderResults() {
+      const cls = document.getElementById('resultClass').value;
+      const list = resultSets[cls] || [];
+      const tbody = document.getElementById('results-tbody'); tbody.innerHTML = '';
+      let sum = 0, high = 0, low = 100, passed = 0;
+      list.forEach(([name, roll, score]) => {
+        sum += score; high = Math.max(high, score); low = Math.min(low, score);
+        const pass = score >= 50; if (pass) passed++;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="py-3 px-5 font-medium">${name}</td>
+          <td class="py-3 px-3 text-muted">${roll}</td>
+          <td class="py-3 px-3 text-muted">${score}/100</td>
+          <td class="py-3 px-3 text-muted">${gradeOf(score)}</td>
+          <td class="py-3 px-5 text-right"><span class="text-xs font-semibold px-2.5 py-1 rounded-full ${pass ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger'}">${pass ? 'Pass' : 'Fail'}</span></td>`;
+        tbody.appendChild(tr);
+      });
+      document.getElementById('avgScore').textContent = list.length ? Math.round(sum/list.length) : '—';
+      document.getElementById('passRate').textContent = list.length ? Math.round((passed/list.length)*100) + '%' : '—';
+      document.getElementById('topScore').textContent = list.length ? high : '—';
+      document.getElementById('lowScore').textContent = list.length ? low : '—';
+    }
+    renderResults();
+
+    lucide.createIcons();
+  </script>
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Profile — Scholaris Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          primary: '#2563EB', success: '#22C55E', danger: '#EF4444',
+          warning: '#F59E0B', bg: '#F8FAFC', ink: '#0F172A',
+          muted: '#64748B', line: '#E2E8F0',
+        },
+        fontFamily: { sans: ['Inter','sans-serif'] },
+        borderRadius: { card: '16px', btn: '12px', inp: '10px' },
+        boxShadow: { soft: '0 1px 3px rgba(15,23,42,.08)' }
+      }
+    }
+  }
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 8px; }
+
+  .sidebar-link { transition: background-color .15s ease, color .15s ease; }
+  .sidebar-link.active { background: #2563EB; color: white; }
+  .sidebar-link.active svg { color: white; }
+  .sidebar-link:not(.active):hover { background: #F1F5F9; }
+
+  #sidebar { transition: transform .25s ease, width .2s ease; }
+  #overlay { transition: opacity .2s ease; }
+
+  .collapsed #sidebar-labels, .collapsed .sidebar-section-label, .collapsed #sidebar-footer-text { display: none; }
+  .collapsed #sidebar { width: 84px; }
+  .collapsed #brand-text { display: none; }
+
+  @media (max-width: 1023px) {
+    #sidebar { position: fixed; z-index: 50; top: 0; left: 0; height: 100vh; transform: translateX(-100%); }
+    #sidebar.open { transform: translateX(0); }
+  }
+
+  .quick-action:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(15,23,42,.08); }
+  .quick-action { transition: transform .15s ease, box-shadow .15s ease; }
+
+  .timeline-dot::before {
+    content: ''; position: absolute; left: 5px; top: 22px; bottom: -22px; width: 2px; background: #E2E8F0;
+  }
+  .timeline-item:last-child .timeline-dot::before { display: none; }
+
+  /* ---- Dark mode overrides (class-based, works across every page) ---- */
+  html.dark body { background: #0B1220; color: #E2E8F0; }
+  html.dark .bg-bg { background-color: #0B1220 !important; }
+  html.dark .bg-white { background-color: #111A2E !important; }
+  html.dark .border-line { border-color: #253044 !important; }
+  html.dark .text-ink { color: #F1F5F9 !important; }
+  html.dark .text-muted { color: #8B98AC !important; }
+  html.dark .divide-line > * + * { border-color: #253044 !important; }
+  html.dark ::-webkit-scrollbar-thumb { background: #253044; }
+  html.dark input, html.dark select, html.dark textarea { background-color: #0B1220; color: #E2E8F0; }
+  html.dark .sidebar-link:not(.active):hover { background: #172033 !important; }
+  html.dark .hover\:bg-bg:hover { background-color: #172033 !important; }
+  html.dark .modal-backdrop { background: rgba(0,0,0,.65); }
+
+  .modal-backdrop { background: rgba(15,23,42,.5); }
+  .tab-btn.active { background: #2563EB; color: #fff; }
+  .tab-btn { transition: background-color .15s ease, color .15s ease; }
+  input[type="text"], input[type="number"], input[type="date"], input[type="email"], input[type="tel"], select, textarea {
+    outline: none;
+  }
+  input:focus, select:focus, textarea:focus { box-shadow: 0 0 0 3px rgba(37,99,235,.15); border-color:#2563EB; }
+</style>
+<script>
+  if (localStorage.getItem('scholaris-theme') === 'dark') document.documentElement.classList.add('dark');
+</script>
+</head>
+<body class="bg-bg text-ink antialiased">
+
+  <div class="flex min-h-screen">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="w-[260px] bg-white border-r border-line flex flex-col shrink-0">
+      <div class="h-[72px] flex items-center justify-between px-5 border-b border-line">
+        <a href="index.html" class="flex items-center gap-2.5 min-w-0">
+          <div class="w-9 h-9 rounded-btn bg-primary flex items-center justify-center shrink-0">
+            <i data-lucide="graduation-cap" class="w-5 h-5 text-white"></i>
+          </div>
+          <span id="brand-text" class="font-bold text-base tracking-tight truncate">Scholaris</span>
+        </a>
+        <button id="close-sidebar" class="lg:hidden text-muted"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+<a href="index.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+  <i data-lucide="layout-dashboard" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Dashboard</span>
+</a>
+<p class="sidebar-section-label px-3 pt-4 pb-1 text-[11px] font-bold text-muted tracking-wider uppercase">Student Management</p>
+<a href="students.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+  <i data-lucide="users" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Students</span>
+</a>
+<a href="classes.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+  <i data-lucide="school" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Classes</span>
+</a>
+<a href="attendance.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+  <i data-lucide="clipboard-check" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Attendance</span>
+</a>
+<p class="sidebar-section-label px-3 pt-4 pb-1 text-[11px] font-bold text-muted tracking-wider uppercase">Academics</p>
+<a href="subjects.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+  <i data-lucide="book-open" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Subjects</span>
+</a>
+<a href="exams.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+  <i data-lucide="file-text" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Exams</span>
+</a>
+<a href="results.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+  <i data-lucide="award" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Results</span>
+</a>
+<p class="sidebar-section-label px-3 pt-4 pb-1 text-[11px] font-bold text-muted tracking-wider uppercase">Staff</p>
+<a href="teachers.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+  <i data-lucide="presentation" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Teachers</span>
+</a>
+<p class="sidebar-section-label px-3 pt-4 pb-1 text-[11px] font-bold text-muted tracking-wider uppercase">Finance</p>
+<a href="fees.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+  <i data-lucide="wallet" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Fees</span>
+</a>
+<p class="sidebar-section-label px-3 pt-4 pb-1 text-[11px] font-bold text-muted tracking-wider uppercase">Communication</p>
+<a href="notices.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+  <i data-lucide="megaphone" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Notices</span>
+</a>
+<a href="events.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+  <i data-lucide="calendar-days" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Events</span>
+</a>
+<a href="messages.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted">
+  <i data-lucide="message-square" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Messages</span>
+</a>
+<a href="settings.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium text-muted mt-4">
+  <i data-lucide="settings" class="w-[18px] h-[18px] shrink-0"></i><span id="sidebar-labels">Settings</span>
+</a>
+      </nav>
+
+      <div id="sidebar-footer-text" class="border-t border-line p-4 flex items-center gap-3">
+        <img src="https://i.pravatar.cc/64?img=12" class="w-9 h-9 rounded-full shrink-0" />
+        <div class="min-w-0 flex-1">
+          <p class="text-sm font-semibold truncate">Abbas Raza</p>
+          <p class="text-xs text-muted truncate">Administrator</p>
+        </div>
+        <button class="text-muted hover:text-danger" title="Log out" onclick="window.location.href='login.html'">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </aside>
+
+    <div id="overlay" class="hidden fixed inset-0 bg-ink/40 z-40 lg:hidden"></div>
+
+    <!-- MAIN -->
+    <div class="flex-1 min-w-0 flex flex-col">
+
+      <!-- NAVBAR -->
+      <header class="h-[72px] bg-white border-b border-line flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
+          <button id="open-sidebar" class="lg:hidden text-muted"><i data-lucide="menu" class="w-5 h-5"></i></button>
+          <button id="collapse-toggle" class="hidden lg:flex text-muted hover:text-ink"><i data-lucide="panel-left" class="w-5 h-5"></i></button>
+          <div class="relative max-w-xs w-full hidden sm:block">
+            <i data-lucide="search" class="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2"></i>
+            <input type="text" placeholder="Search students..." class="w-full pl-9 pr-3 py-2.5 rounded-inp border border-line text-sm bg-bg focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary" />
+          </div>
+        </div>
+        <div class="flex items-center gap-1 sm:gap-2">
+          <div class="relative">
+            <button id="notif-btn" class="relative w-10 h-10 flex items-center justify-center text-muted hover:text-ink hover:bg-bg rounded-btn">
+              <i data-lucide="bell" class="w-5 h-5"></i>
+              <span id="notif-badge" class="absolute top-1.5 right-1.5 w-4 h-4 bg-danger text-white text-[10px] font-bold rounded-full flex items-center justify-center">3</span>
+            </button>
+            <div id="notif-menu" class="hidden absolute right-0 top-12 w-80 max-w-[90vw] bg-white border border-line rounded-card shadow-soft z-40 overflow-hidden">
+              <div class="flex items-center justify-between px-4 py-3 border-b border-line">
+                <p class="text-sm font-semibold">Notifications</p>
+                <button onclick="markAllRead()" class="text-xs font-semibold text-primary">Mark all read</button>
+              </div>
+              <div id="notif-list" class="max-h-80 overflow-y-auto divide-y divide-line"></div>
+              <a href="notices.html" class="block text-center text-xs font-semibold text-primary py-3 border-t border-line hover:bg-bg">View all notices</a>
+            </div>
+          </div>
+          <button class="w-10 h-10 flex items-center justify-center text-muted hover:text-ink hover:bg-bg rounded-btn">
+            <i data-lucide="mail" class="w-5 h-5"></i>
+          </button>
+          <button id="dark-toggle" class="w-10 h-10 flex items-center justify-center text-muted hover:text-ink hover:bg-bg rounded-btn">
+            <i data-lucide="moon" class="w-5 h-5"></i>
+          </button>
+          <div class="w-px h-7 bg-line mx-1 hidden sm:block"></div>
+          <div class="relative">
+            <button id="profile-btn" class="flex items-center gap-2 pl-1">
+              <img src="https://i.pravatar.cc/64?img=12" class="w-9 h-9 rounded-full" />
+              <i data-lucide="chevron-down" class="w-4 h-4 text-muted hidden sm:block"></i>
+            </button>
+            <div id="profile-menu" class="hidden absolute right-0 top-12 w-48 bg-white border border-line rounded-card shadow-soft py-2 z-40">
+              <a href="profile.html" class="flex items-center gap-2.5 px-4 py-2 text-sm text-ink hover:bg-bg"><i data-lucide="user" class="w-4 h-4 text-muted"></i>Profile</a>
+              <a href="settings.html" class="flex items-center gap-2.5 px-4 py-2 text-sm text-ink hover:bg-bg"><i data-lucide="settings" class="w-4 h-4 text-muted"></i>Settings</a>
+              <div class="h-px bg-line my-1"></div>
+              <a href="login.html" class="flex items-center gap-2.5 px-4 py-2 text-sm text-danger hover:bg-bg"><i data-lucide="log-out" class="w-4 h-4"></i>Logout</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- CONTENT -->
+      <main class="flex-1 p-4 sm:p-6 space-y-6 max-w-[1440px] w-full mx-auto">
+
+        <div><h1 class="text-xl font-bold text-ink">My Profile</h1><p class="text-sm text-muted mt-0.5">Your account details and activity</p></div>
+
+        <div class="bg-primary rounded-card p-6 sm:p-8 flex flex-col sm:flex-row items-center sm:items-end gap-5 relative overflow-hidden">
+          <img src="https://i.pravatar.cc/120?img=12" class="w-24 h-24 rounded-full ring-4 ring-white/30 relative z-10" />
+          <div class="relative z-10 text-center sm:text-left">
+            <h2 class="text-2xl font-bold text-white">Abbas Raza</h2>
+            <p class="text-blue-100 text-sm mt-1">Administrator • Scholaris International School</p>
+            <p class="text-blue-100 text-xs mt-1">abbas.raza@scholaris.edu</p>
+          </div>
+          <button onclick="toast('Photo updated')" class="sm:ml-auto relative z-10 bg-white/15 hover:bg-white/25 text-white text-sm font-semibold px-4 py-2.5 rounded-btn">Change Photo</button>
+        </div>
+
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white rounded-card border border-line p-4 shadow-soft text-center"><p class="text-xl font-bold text-ink">3 yrs</p><p class="text-xs text-muted mt-1">At Scholaris</p></div>
+          <div class="bg-white rounded-card border border-line p-4 shadow-soft text-center"><p class="text-xl font-bold text-ink">128</p><p class="text-xs text-muted mt-1">Actions This Month</p></div>
+          <div class="bg-white rounded-card border border-line p-4 shadow-soft text-center"><p class="text-xl font-bold text-ink">24</p><p class="text-xs text-muted mt-1">Classes Managed</p></div>
+          <div class="bg-white rounded-card border border-line p-4 shadow-soft text-center"><p class="text-xl font-bold text-ink">95</p><p class="text-xs text-muted mt-1">Staff Overseen</p></div>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-4">
+          <div class="lg:col-span-2 bg-white rounded-card border border-line shadow-soft p-6">
+            <h3 class="font-semibold text-sm mb-4">Account Details</h3>
+            <form onsubmit="event.preventDefault(); toast('Profile saved')" class="space-y-4">
+              <div class="grid sm:grid-cols-2 gap-4">
+                <div><label class="text-xs font-medium text-muted">Full Name</label><input type="text" value="Abbas Raza" class="w-full mt-1 px-3 py-2.5 rounded-inp border border-line text-sm" /></div>
+                <div><label class="text-xs font-medium text-muted">Role</label><input type="text" value="Administrator" disabled class="w-full mt-1 px-3 py-2.5 rounded-inp border border-line text-sm bg-bg text-muted" /></div>
+                <div><label class="text-xs font-medium text-muted">Email</label><input type="email" value="abbas.raza@scholaris.edu" class="w-full mt-1 px-3 py-2.5 rounded-inp border border-line text-sm" /></div>
+                <div><label class="text-xs font-medium text-muted">Phone</label><input type="tel" value="+92 300 1112223" class="w-full mt-1 px-3 py-2.5 rounded-inp border border-line text-sm" /></div>
+              </div>
+              <div><label class="text-xs font-medium text-muted">Bio</label><textarea rows="3" class="w-full mt-1 px-3 py-2.5 rounded-inp border border-line text-sm">Administrator overseeing daily operations, staff coordination, and academic scheduling at Scholaris.</textarea></div>
+              <div class="flex justify-end gap-2 pt-2">
+                <a href="settings.html" class="px-4 py-2.5 rounded-btn border border-line text-sm font-semibold text-muted hover:bg-bg">More Settings</a>
+                <button type="submit" class="px-4 py-2.5 rounded-btn bg-primary text-white text-sm font-semibold hover:bg-blue-700">Save Changes</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="bg-white rounded-card border border-line shadow-soft p-6">
+            <h3 class="font-semibold text-sm mb-4">Recent Activity</h3>
+            <ul class="space-y-4">
+              <li class="timeline-item relative pl-5"><span class="timeline-dot absolute left-0 top-1.5 w-2.5 h-2.5 rounded-full bg-primary"></span><p class="text-sm text-ink">Approved new teacher — Mr. Adeel Nasir</p><p class="text-xs text-muted">Today, 9:14 AM</p></li>
+              <li class="timeline-item relative pl-5"><span class="timeline-dot absolute left-0 top-1.5 w-2.5 h-2.5 rounded-full bg-success"></span><p class="text-sm text-ink">Published mid-term exam schedule</p><p class="text-xs text-muted">Yesterday</p></li>
+              <li class="timeline-item relative pl-5"><span class="timeline-dot absolute left-0 top-1.5 w-2.5 h-2.5 rounded-full bg-warning"></span><p class="text-sm text-ink">Sent fee deadline reminder</p><p class="text-xs text-muted">2 days ago</p></li>
+              <li class="timeline-item relative pl-5"><span class="timeline-dot absolute left-0 top-1.5 w-2.5 h-2.5 rounded-full bg-danger"></span><p class="text-sm text-ink">Flagged low attendance in 8-C</p><p class="text-xs text-muted">3 days ago</p></li>
+            </ul>
+          </div>
+        </div>
+
+        <footer class="text-center text-xs text-muted py-4">Scholaris Admin Prototype — mock data for demonstration only.</footer>
+      </main>
+    </div>
+  </div>
+
+
+
+  <script>
+    lucide.createIcons();
+
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    document.getElementById('open-sidebar').addEventListener('click', () => {
+      sidebar.classList.add('open');
+      overlay.classList.remove('hidden');
+    });
+    document.getElementById('close-sidebar').addEventListener('click', closeSidebar);
+    overlay.addEventListener('click', closeSidebar);
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      overlay.classList.add('hidden');
+    }
+
+    document.getElementById('collapse-toggle').addEventListener('click', () => {
+      document.body.classList.toggle('collapsed');
+    });
+
+    const profileBtn = document.getElementById('profile-btn');
+    const profileMenu = document.getElementById('profile-menu');
+    profileBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      profileMenu.classList.toggle('hidden');
+    });
+    document.addEventListener('click', () => profileMenu.classList.add('hidden'));
+
+    // ---- Dark mode: apply saved preference, then wire the toggle ----
+    (function () {
+      const saved = localStorage.getItem('scholaris-theme');
+      if (saved === 'dark') document.documentElement.classList.add('dark');
+      const icon = document.querySelector('#dark-toggle i');
+      icon.setAttribute('data-lucide', document.documentElement.classList.contains('dark') ? 'sun' : 'moon');
+    })();
+    document.getElementById('dark-toggle').addEventListener('click', function () {
+      document.documentElement.classList.toggle('dark');
+      const isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('scholaris-theme', isDark ? 'dark' : 'light');
+      this.querySelector('i').setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+      lucide.createIcons();
+    });
+
+    // ---- Notifications dropdown ----
+    let notifItems = [
+      { icon: 'megaphone', color: 'primary', title: 'Parent-Teacher Meeting', body: 'Scheduled for Aug 3rd, 9 AM.', time: '2h ago', unread: true },
+      { icon: 'wallet', color: 'warning', title: 'Fee deadline approaching', body: '48 students have pending dues.', time: '5h ago', unread: true },
+      { icon: 'file-text', color: 'success', title: 'Exam schedule published', body: 'Mid-term timetable is live.', time: '1d ago', unread: true },
+      { icon: 'clipboard-check', color: 'danger', title: 'Low attendance alert', body: 'Class 8-C dropped below 90%.', time: '2d ago', unread: false },
+    ];
+    function renderNotifDropdown() {
+      const list = document.getElementById('notif-list');
+      list.innerHTML = notifItems.map(n => `
+        <div class="flex gap-3 px-4 py-3 ${n.unread ? 'bg-primary/5' : ''}">
+          <span class="w-8 h-8 rounded-btn bg-${n.color}/10 flex items-center justify-center shrink-0"><i data-lucide="${n.icon}" class="w-4 h-4 text-${n.color}"></i></span>
+          <div class="min-w-0"><p class="text-sm font-medium truncate">${n.title}</p><p class="text-xs text-muted mt-0.5">${n.body}</p><p class="text-[11px] text-muted mt-1">${n.time}</p></div>
+        </div>`).join('');
+      const unread = notifItems.filter(n => n.unread).length;
+      const badge = document.getElementById('notif-badge');
+      badge.textContent = unread;
+      badge.style.display = unread ? 'flex' : 'none';
+      lucide.createIcons();
+    }
+    function markAllRead() { notifItems.forEach(n => n.unread = false); renderNotifDropdown(); }
+    const notifBtn = document.getElementById('notif-btn');
+    const notifMenu = document.getElementById('notif-menu');
+    notifBtn.addEventListener('click', (e) => { e.stopPropagation(); notifMenu.classList.toggle('hidden'); });
+    document.addEventListener('click', () => notifMenu.classList.add('hidden'));
+    renderNotifDropdown();
+
+    function toast(msg) {
+      const el = document.createElement('div');
+      el.className = 'fixed bottom-5 right-5 z-[60] bg-ink text-white text-sm font-medium px-4 py-3 rounded-btn shadow-soft';
+      el.textContent = msg;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 2200);
+    }
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+
+    lucide.createIcons();
+  </script>
+</body>
+</html>

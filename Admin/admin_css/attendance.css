@@ -1,0 +1,120 @@
+ body {
+     font-family: 'Inter', sans-serif;
+ }
+
+ ::-webkit-scrollbar {
+     width: 8px;
+     height: 8px;
+ }
+
+ ::-webkit-scrollbar-thumb {
+     background: #E2E8F0;
+     border-radius: 8px;
+ }
+
+ .sidebar-link {
+     transition: background-color .15s ease, color .15s ease;
+ }
+
+ .sidebar-link.active {
+     background: #2563EB;
+     color: white;
+ }
+
+ .sidebar-link.active svg {
+     color: white;
+ }
+
+ .sidebar-link:not(.active):hover {
+     background: #F1F5F9;
+ }
+
+ #sidebar {
+     transition: transform .25s ease, width .2s ease;
+ }
+
+ #overlay {
+     transition: opacity .2s ease;
+ }
+
+ .collapsed #sidebar-labels,
+ .collapsed .sidebar-section-label,
+ .collapsed #sidebar-footer-text {
+     display: none;
+ }
+
+ .collapsed #sidebar {
+     width: 84px;
+ }
+
+ .collapsed #brand-text {
+     display: none;
+ }
+
+ @media (max-width: 1023px) {
+     #sidebar {
+         position: fixed;
+         z-index: 50;
+         top: 0;
+         left: 0;
+         height: 100vh;
+         transform: translateX(-100%);
+     }
+
+     #sidebar.open {
+         transform: translateX(0);
+     }
+ }
+
+ .quick-action:hover {
+     transform: translateY(-2px);
+     box-shadow: 0 6px 16px rgba(15, 23, 42, .08);
+ }
+
+ .quick-action {
+     transition: transform .15s ease, box-shadow .15s ease;
+ }
+
+ .timeline-dot::before {
+     content: '';
+     position: absolute;
+     left: 5px;
+     top: 22px;
+     bottom: -22px;
+     width: 2px;
+     background: #E2E8F0;
+ }
+
+ .timeline-item:last-child .timeline-dot::before {
+     display: none;
+ }
+
+ .modal-backdrop {
+     background: rgba(15, 23, 42, .5);
+ }
+
+ .tab-btn.active {
+     background: #2563EB;
+     color: #fff;
+ }
+
+ .tab-btn {
+     transition: background-color .15s ease, color .15s ease;
+ }
+
+ input[type="text"],
+ input[type="number"],
+ input[type="date"],
+ input[type="email"],
+ input[type="tel"],
+ select,
+ textarea {
+     outline: none;
+ }
+
+ input:focus,
+ select:focus,
+ textarea:focus {
+     box-shadow: 0 0 0 3px rgba(37, 99, 235, .15);
+     border-color: #2563EB;
+ }
